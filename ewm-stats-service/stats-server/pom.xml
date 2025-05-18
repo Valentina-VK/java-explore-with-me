@@ -12,6 +12,10 @@
 
     <artifactId>stats-server</artifactId>
 
+    <properties>
+        <start-class>ru.practicum.server.StatsServerApp</start-class>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -69,7 +73,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>package ru.practicum.server.StatsServerApp</mainClass>
+                    <mainClass>ru.practicum.server.StatsServerApp</mainClass>
                     <layout>JAR</layout>
                 </configuration>
                 <executions>
