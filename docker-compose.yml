@@ -28,6 +28,7 @@ services:
       retries: 10
 
   ewm-service:
+    build: ewm-main-service
     ports:
        - "8080:8080"
 
