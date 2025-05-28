@@ -1,7 +1,6 @@
 package ru.practicum.client;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
@@ -10,7 +9,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import static ru.practicum.constants.StatsConstants.DATE_TIME_FORMAT;
 
@@ -40,7 +38,7 @@ public class StatsClient {
         }
         query.append("&unique=" + unique);
 
-        ViewStatsDto[] response =restTemplate.getForEntity(query.toString(), ViewStatsDto[].class).getBody();
+        ViewStatsDto[] response = restTemplate.getForEntity(query.toString(), ViewStatsDto[].class).getBody();
         if (response == null) {
             return List.of();
         }

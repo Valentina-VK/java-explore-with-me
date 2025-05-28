@@ -55,7 +55,7 @@ public class EventPublicController {
                                      HttpServletRequest request) {
         log.info("GET получение события id {} ", eventId);
         long views;
-        List<ViewStatsDto> statistic= statsClient.getStatistic(LocalDateTime.now().minusYears(5),
+        List<ViewStatsDto> statistic = statsClient.getStatistic(LocalDateTime.now().minusYears(5),
                 LocalDateTime.now(), List.of(request.getRequestURI()), true);
         if (statistic.isEmpty()) {
             views = 0;
