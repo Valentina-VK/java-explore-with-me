@@ -7,13 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.client.StatsClient;
 import ru.practicum.ewm.dto.compilation.CompilationDto;
 import ru.practicum.ewm.dto.compilation.NewCompilationDto;
 import ru.practicum.ewm.dto.compilation.UpdateCompilationRequest;
-import ru.practicum.ewm.dto.request.ParticipationRequestDto;
 import ru.practicum.ewm.model.Compilation;
-import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.service.compilation.CompilationServiceImpl;
 
 import java.util.List;
@@ -21,7 +18,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 @SpringBootTest
@@ -73,7 +70,8 @@ class CompilationServiceImplTest {
 
         CompilationDto result = compilationService.getById(existingId);
 
-        assertThat(result, notNullValue());;
+        assertThat(result, notNullValue());
+        ;
         assertThat(result.getId(), equalTo(existingId));
 
     }
@@ -81,9 +79,10 @@ class CompilationServiceImplTest {
     @Test
     void getCompilations_simpleTest() {
 
-        List<CompilationDto> result = compilationService.getCompilations(false,1,10);
+        List<CompilationDto> result = compilationService.getCompilations(false, 1, 10);
 
-        assertThat(result, notNullValue());;
+        assertThat(result, notNullValue());
+        ;
         assertThat(result.size(), equalTo(0));
     }
 }

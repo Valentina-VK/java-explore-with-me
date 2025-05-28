@@ -81,7 +81,7 @@ class EventServiceImplTest {
     @Test
     void getEventsByAdmin_simpleTest() {
         List<EventFullDto> result = eventService.getEventsByAdmin(List.of(11L), List.of(EventState.PENDING), null,
-                "2026-01-25 15:15:00", "2026-09-25 15:15:15", 0,1);
+                "2026-01-25 15:15:00", "2026-09-25 15:15:15", 0, 1);
 
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(1));
@@ -90,7 +90,7 @@ class EventServiceImplTest {
     @Test
     void searchEvents_simpleTest() {
         List<EventShortDto> result = eventService.searchEvents("an", List.of(12L), null,
-                "2026-01-25 15:15:00", "2026-09-25 15:15:15", false, "VIEWS",0, 10);
+                "2026-01-25 15:15:00", "2026-09-25 15:15:15", false, "VIEWS", 0, 10);
 
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(1));

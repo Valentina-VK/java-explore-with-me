@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.client.StatsClient;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.dto.request.ParticipationRequestDto;
@@ -50,11 +49,10 @@ class RequestServiceImplTest {
     }
 
 
-
     @Test
     void findAllRequestsByEventIdAndInitiator_simpleTest() {
 
-        List<ParticipationRequestDto>  result = requestService.findAllRequestsByEventIdAndInitiator(11L, 21L);
+        List<ParticipationRequestDto> result = requestService.findAllRequestsByEventIdAndInitiator(11L, 21L);
 
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(1));
@@ -64,7 +62,7 @@ class RequestServiceImplTest {
     void updateRequestsStatus_simpleTest() {
 
         EventRequestStatusUpdateResult result = requestService.updateRequestsStatus(11L, 21L,
-               new EventRequestStatusUpdateRequest(List.of(31L), RequestStatus.CONFIRMED));
+                new EventRequestStatusUpdateRequest(List.of(31L), RequestStatus.CONFIRMED));
 
         assertThat(result, notNullValue());
         assertThat(result.getConfirmedRequests().size(), equalTo(1));
