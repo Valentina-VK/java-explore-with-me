@@ -1,13 +1,16 @@
 package ru.practicum.client;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static ru.practicum.constants.StatsConstants.DATE_TIME_FORMAT;
 
@@ -28,15 +31,19 @@ public class StatsClient {
     public List<ViewStatsDto> getStatistic(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         StringBuilder query = new StringBuilder();
         query
-                .append("&")
+                .append("/stats?&")
                 .append("start=" + formatter.format(start))
-                .append("end=" + formatter.format(end));
+                .append("&end=" + formatter.format(end));
 
         if (uris != null && !uris.isEmpty()) {
-            query.append("uris=" + String.join("uris=", uris));
+            query.append("&uris=" + String.join("uris=", uris));
         }
-        query.append("unique=" + unique);
+        query.append("&unique=" + unique);
 
-        return restTemplate.getForObject(query.toString(), List.class);
+        ViewStatsDto[] response =restTemplate.getForEntity(query.toString(), ViewStatsDto[].class).getBody();
+        if (response == null) {
+            return List.of();
+        }
+        return Arrays.asList(response);
     }
 }
