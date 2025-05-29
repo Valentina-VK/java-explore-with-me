@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.server.exceptions.NotValidDateTimeException;
 import ru.practicum.server.mapper.EndpointHitMapper;
 import ru.practicum.server.mapper.ViewStatsMapper;
 import ru.practicum.server.model.EndpointHit;
@@ -37,6 +38,9 @@ public class StatsServiceImpl implements StatsService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
         LocalDateTime startTime = LocalDateTime.parse(start, formatter);
         LocalDateTime endTime = LocalDateTime.parse(end, formatter);
+        if (startTime.isEqual(endTime) || startTime.isAfter(endTime)) {
+            throw new NotValidDateTimeException("Некорректные даты в запросе");
+        }
         List<ViewStats> response;
         if (unique) {
             response = statsRepository.findUniqueHit(startTime, endTime, uris);
