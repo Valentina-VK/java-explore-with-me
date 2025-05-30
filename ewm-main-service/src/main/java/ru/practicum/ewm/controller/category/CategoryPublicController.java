@@ -1,4 +1,4 @@
-package ru.practicum.ewm.controller;
+package ru.practicum.ewm.controller.category;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -17,6 +17,9 @@ import ru.practicum.ewm.service.category.CategoryService;
 
 import java.util.List;
 
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_TEN;
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_ZERO;
+
 @RestController
 @RequestMapping(path = "/categories")
 @RequiredArgsConstructor
@@ -27,8 +30,8 @@ public class CategoryPublicController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                           @RequestParam(defaultValue = "10") @Positive int size) {
+    public List<CategoryDto> getCategories(@RequestParam(defaultValue = DEFAULT_ZERO) @PositiveOrZero int from,
+                                           @RequestParam(defaultValue = DEFAULT_TEN) @Positive int size) {
         log.info("GET получение категорий по фильтрам от {}, количеством {}", from, size);
         return categoryService.getAllByFilters(from, size);
     }

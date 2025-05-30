@@ -156,29 +156,15 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventFullDto> getEventsByAdmin(List<Long> users, List<EventState> states, List<Long> categories,
                                                String rangeStart, String rangeEnd, int from, int size) {
-        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
         QEvent event = QEvent.event;
-        BooleanExpression byFilters;
-        if (Objects.nonNull(rangeStart) && Objects.nonNull(rangeEnd)) {
-            LocalDateTime start = DateTimeMapper.mapToDateTime(rangeStart);
-            LocalDateTime end = DateTimeMapper.mapToDateTime(rangeEnd);
-            if (start.isEqual(end) || start.isAfter(end)) {
-                throw new NotValidDateTimeException("Некорректные даты в запросе");
-            }
-            byFilters = event.eventDate.between(start, end);
-        } else {
-            byFilters = event.eventDate.after(LocalDateTime.now());
-        }
+        BooleanExpression byFilters = preSetQuery(event, categories, rangeStart, rangeEnd);
         if (Objects.nonNull(states)) {
             byFilters = byFilters.and(event.state.in(states));
         }
         if (Objects.nonNull(categories)) {
-            byFilters = byFilters.and(event.category.id.in(categories));
+            byFilters = byFilters.and(event.initiator.id.in(users));
         }
-        List<Event> events = queryFactory.selectFrom(event)
-                .where(byFilters)
-                .offset(from)
-                .limit(size)
+        List<Event> events = createQuery(event, byFilters, from, size)
                 .fetch();
 
         return events.stream()
@@ -189,22 +175,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventShortDto> searchEvents(String text, List<Long> categories, Boolean paid, String rangeStart,
                                             String rangeEnd, boolean onlyAvailable, String sort, int from, int size) {
-        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
         QEvent event = QEvent.event;
-        BooleanExpression byFilters;
-        if (Objects.nonNull(rangeStart) && Objects.nonNull(rangeEnd)) {
-            LocalDateTime start = DateTimeMapper.mapToDateTime(rangeStart);
-            LocalDateTime end = DateTimeMapper.mapToDateTime(rangeEnd);
-            if (start.isEqual(end) || start.isAfter(end)) {
-                throw new NotValidDateTimeException("Некорректные даты в запросе");
-            }
-            byFilters = event.eventDate.between(start, end);
-        } else {
-            byFilters = event.eventDate.after(LocalDateTime.now());
-        }
-        if (Objects.nonNull(categories)) {
-            byFilters = byFilters.and(event.category.id.in(categories));
-        }
+        BooleanExpression byFilters = preSetQuery(event, categories, rangeStart, rangeEnd);
         if (Objects.nonNull(paid)) {
             byFilters = byFilters.and(event.paid.eq(paid));
         }
@@ -213,10 +185,8 @@ public class EventServiceImpl implements EventService {
                     .or(event.annotation.containsIgnoreCase(text)));
         }
         byFilters = byFilters.and(event.confirmedRequests.lt(event.participantLimit));
-        JPAQuery<Event> query = queryFactory.selectFrom(event)
-                .where(byFilters)
-                .offset(from)
-                .limit(size);
+
+        JPAQuery<Event> query = createQuery(event, byFilters, from, size);
 
         if (Objects.nonNull(sort)) {
             if (sort.equals("VIEWS")) {
@@ -239,5 +209,31 @@ public class EventServiceImpl implements EventService {
             return locationRepository.save(location);
         }
         return existingLocation;
+    }
+
+    private BooleanExpression preSetQuery(QEvent event, List<Long> categories, String rangeStart, String rangeEnd) {
+        BooleanExpression byFilters;
+        if (Objects.nonNull(rangeStart) && Objects.nonNull(rangeEnd)) {
+            LocalDateTime start = DateTimeMapper.mapToDateTime(rangeStart);
+            LocalDateTime end = DateTimeMapper.mapToDateTime(rangeEnd);
+            if (start.isEqual(end) || start.isAfter(end)) {
+                throw new NotValidDateTimeException("Некорректные даты в запросе");
+            }
+            byFilters = event.eventDate.between(start, end);
+        } else {
+            byFilters = event.eventDate.after(LocalDateTime.now());
+        }
+        if (Objects.nonNull(categories)) {
+            byFilters = byFilters.and(event.category.id.in(categories));
+        }
+        return byFilters.and(event.confirmedRequests.lt(event.participantLimit));
+    }
+
+    private JPAQuery<Event> createQuery(QEvent event, BooleanExpression byFilters, int from, int size) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+        return queryFactory.selectFrom(event)
+                .where(byFilters)
+                .offset(from)
+                .limit(size);
     }
 }

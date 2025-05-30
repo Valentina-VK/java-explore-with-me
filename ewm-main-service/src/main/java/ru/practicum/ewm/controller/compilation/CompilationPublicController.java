@@ -1,4 +1,4 @@
-package ru.practicum.ewm.controller;
+package ru.practicum.ewm.controller.compilation;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -17,6 +17,9 @@ import ru.practicum.ewm.service.compilation.CompilationService;
 
 import java.util.List;
 
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_TEN;
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_ZERO;
+
 @RestController
 @RequestMapping(path = "/compilations")
 @RequiredArgsConstructor
@@ -28,8 +31,8 @@ public class CompilationPublicController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CompilationDto> getAllByParam(@RequestParam(required = false) Boolean pinned,
-                                              @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                              @RequestParam(defaultValue = "10") @Positive int size) {
+                                              @RequestParam(defaultValue = DEFAULT_ZERO) @PositiveOrZero int from,
+                                              @RequestParam(defaultValue = DEFAULT_TEN) @Positive int size) {
         log.info("GET Поиск подборок событий по параметрам");
         return compilationService.getCompilations(pinned, from, size);
     }

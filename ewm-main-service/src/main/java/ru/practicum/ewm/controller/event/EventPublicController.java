@@ -1,4 +1,4 @@
-package ru.practicum.ewm.controller;
+package ru.practicum.ewm.controller.event;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Positive;
@@ -22,7 +22,9 @@ import ru.practicum.ewm.util.DateTimeMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static ru.practicum.ewm.util.EwmConstants.STATS_URI;
+import static ru.practicum.ewm.util.EwmConstants.APP_NAME;
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_TEN;
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_ZERO;
 
 @RestController
 @RequestMapping(path = "/events")
@@ -31,7 +33,7 @@ import static ru.practicum.ewm.util.EwmConstants.STATS_URI;
 @Validated
 public class EventPublicController {
     private final EventService eventService;
-    private final StatsClient statsClient = new StatsClient(STATS_URI);
+    private final StatsClient statsClient;
 
     @GetMapping
     public List<EventShortDto> findEventsByFilters(@RequestParam(required = false) String text,
@@ -41,8 +43,8 @@ public class EventPublicController {
                                                    @RequestParam(required = false) String rangeEnd,
                                                    @RequestParam(defaultValue = "false") boolean onlyAvailable,
                                                    @RequestParam(required = false) String sort,
-                                                   @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                                   @RequestParam(defaultValue = "10") @Positive int size,
+                                                   @RequestParam(defaultValue = DEFAULT_ZERO) @PositiveOrZero int from,
+                                                   @RequestParam(defaultValue = DEFAULT_TEN) @Positive int size,
                                                    HttpServletRequest request) {
         log.info("GET Поиск событий по фильтрам: text {} sort {}, from {}, size {}", text, sort, from, size);
 
@@ -54,14 +56,12 @@ public class EventPublicController {
     public EventFullDto getEventById(@Positive @PathVariable Long eventId,
                                      HttpServletRequest request) {
         log.info("GET получение события id {} ", eventId);
-        long views;
+
         List<ViewStatsDto> statistic = statsClient.getStatistic(LocalDateTime.now().minusYears(5),
                 LocalDateTime.now(), List.of(request.getRequestURI()), true);
-        if (statistic.isEmpty()) {
-            views = 0;
-        } else {
-            views = statistic.getFirst().getHits();
-        }
+
+        long views = statistic.stream().findFirst().map(ViewStatsDto::getHits).orElse(0L);
+
         EventFullDto response = eventService.getEventById(eventId, views);
         if (response != null) {
             sendHitToStatsService(request);
@@ -72,7 +72,7 @@ public class EventPublicController {
 
     private void sendHitToStatsService(HttpServletRequest request) {
         EndpointHitDto hitDto = EndpointHitDto.builder()
-                .app("ewm-main-service")
+                .app(APP_NAME)
                 .ip(request.getRemoteAddr())
                 .uri(request.getRequestURI())
                 .timestamp(DateTimeMapper.mapToString(LocalDateTime.now()))

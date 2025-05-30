@@ -1,4 +1,4 @@
-package ru.practicum.ewm.controller;
+package ru.practicum.ewm.controller.user;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -22,6 +22,9 @@ import ru.practicum.ewm.service.user.UserService;
 
 import java.util.List;
 
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_TEN;
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_ZERO;
+
 @RestController
 @RequestMapping(path = "/admin/users")
 @RequiredArgsConstructor
@@ -39,8 +42,8 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDto> getUsers(@RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                  @RequestParam(defaultValue = "10") @Positive int size,
+    public List<UserDto> getUsers(@RequestParam(defaultValue = DEFAULT_ZERO) @PositiveOrZero int from,
+                                  @RequestParam(defaultValue = DEFAULT_TEN) @Positive int size,
                                   @RequestParam(required = false) List<Long> ids) {
         log.info("GET получение пользователей по фильтрам от {}, количеством {}, из списка id: {}", from, size, ids);
         return userService.getAllByFilters(from, size, ids);

@@ -1,4 +1,4 @@
-package ru.practicum.ewm.controller;
+package ru.practicum.ewm.controller.event;
 
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
@@ -29,6 +29,9 @@ import ru.practicum.ewm.service.event.EventService;
 import ru.practicum.ewm.service.request.RequestService;
 
 import java.util.List;
+
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_TEN;
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_ZERO;
 
 @RestController
 @RequestMapping(path = "/users/{userId}/events")
@@ -64,8 +67,8 @@ public class EventPrivateController {
 
     @GetMapping
     public List<EventShortDto> getEventsByUser(@PathVariable @Positive Long userId,
-                                               @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
-                                               @RequestParam(name = "size", defaultValue = "10") @Positive int size) {
+                                               @RequestParam(name = "from", defaultValue = DEFAULT_ZERO) @PositiveOrZero int from,
+                                               @RequestParam(name = "size", defaultValue = DEFAULT_TEN) @Positive int size) {
         log.info("GET получение событий пользователя id {}", userId);
         return eventService.getEventsByUser(userId, from, size);
     }

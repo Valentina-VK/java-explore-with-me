@@ -1,4 +1,4 @@
-package ru.practicum.ewm.controller;
+package ru.practicum.ewm.controller.request;
 
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;

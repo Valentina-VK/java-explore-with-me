@@ -6,7 +6,6 @@ import ru.practicum.ewm.exceptions.NotFoundException;
 import ru.practicum.ewm.exceptions.NotValidDateTimeException;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.Request;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.repository.CategoryRepository;
 import ru.practicum.ewm.repository.EventRepository;
@@ -47,10 +46,4 @@ public class ValidateService {
             throw new NotValidDateTimeException("Начало события должно быть не ранее двух часов от текущего момента");
         }
     }
-
-    public Request checkRequest(Long id) {
-        return requestRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Запрос на участие не найден, id: " + id));
-    }
-
 }

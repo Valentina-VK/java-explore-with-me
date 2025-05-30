@@ -1,4 +1,4 @@
-package ru.practicum.ewm.controller;
+package ru.practicum.ewm.controller.event;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -19,6 +19,9 @@ import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.service.event.EventService;
 
 import java.util.List;
+
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_TEN;
+import static ru.practicum.ewm.util.EwmConstants.DEFAULT_ZERO;
 
 @RestController
 @RequestMapping(path = "/admin/events")
@@ -42,8 +45,8 @@ public class EventAdminController {
                                                @RequestParam(required = false) List<Long> categories,
                                                @RequestParam(required = false) String rangeStart,
                                                @RequestParam(required = false) String rangeEnd,
-                                               @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                               @RequestParam(defaultValue = "10") @Positive int size) {
+                                               @RequestParam(defaultValue = DEFAULT_ZERO) @PositiveOrZero int from,
+                                               @RequestParam(defaultValue = DEFAULT_TEN) @Positive int size) {
         log.info("GET получение списка событий: usersId {}, states {}, categoriesId {}, rangeStart {}, rangeEnd {}, from {}, size {}",
                 users, states, categories, rangeStart, rangeEnd, from, size);
         return eventService.getEventsByAdmin(users, states, categories, rangeStart,
