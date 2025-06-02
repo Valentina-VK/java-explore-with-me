@@ -212,8 +212,8 @@ public class EventServiceImpl implements EventService {
                                                         String rangeEnd, boolean onlyAvailable, int from, int size) {
         User user = validateService.checkUser(userId);
         List<Long> subscriptionsIds = user.getSubscriptions().stream()
-                .map(User::getId).
-                toList();
+                .map(User::getId)
+                .toList();
 
         QEvent event = QEvent.event;
         BooleanExpression byFilters = preSetQuery(event, categories, rangeStart, rangeEnd);
