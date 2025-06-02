@@ -9,7 +9,7 @@ import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.dto.event.NewEventDto;
 import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
-import ru.practicum.ewm.model.EventState;
+import ru.practicum.ewm.enums.EventState;
 import ru.practicum.ewm.model.Location;
 import ru.practicum.ewm.service.event.EventServiceImpl;
 
@@ -80,7 +80,7 @@ class EventServiceImplTest {
 
     @Test
     void getEventsByAdmin_simpleTest() {
-        List<EventFullDto> result = eventService.getEventsByAdmin(List.of(11L), List.of(EventState.PENDING), null,
+        List<EventFullDto> result = eventService.getEventsByAdmin(List.of(11L), List.of(EventState.PUBLISHED), null,
                 "2026-01-25 15:15:00", "2026-09-25 15:15:15", 0, 1);
 
         assertThat(result, notNullValue());
@@ -91,6 +91,25 @@ class EventServiceImplTest {
     void searchEvents_simpleTest() {
         List<EventShortDto> result = eventService.searchEvents("an", List.of(12L), null,
                 "2026-01-25 15:15:00", "2026-09-25 15:15:15", false, "VIEWS", 0, 10);
+
+        assertThat(result, notNullValue());
+        assertThat(result.size(), equalTo(1));
+    }
+
+    @Test
+    void searchEvents_withSortByCountSubscribers() {
+        List<EventShortDto> result = eventService.searchEvents("an", null, null,
+                null, null, false, "COUNT_SUBSCRIBERS", 0, 10);
+
+        assertThat(result, notNullValue());
+        assertThat(result.getFirst().getId(), equalTo(21L));
+    }
+
+    @Test
+    void getEventsBySubscriptions_simpleTest() {
+        Long existingId = 13L;
+        List<EventShortDto> result = eventService.getEventsBySubscriptions(existingId, null,
+                "2026-01-25 15:15:00", "2026-09-25 15:15:15", false, 0, 10);
 
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(1));

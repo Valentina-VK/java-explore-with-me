@@ -1,8 +1,14 @@
-INSERT INTO users (id, name, email)
-VALUES (11, 'user1', 'user11@yandex.ru'),
-       (12, 'user2', 'user12@yandex.ru'),
-       (15, 'user5', 'user15@yandex.ru'),
-       (13, 'user3', 'user13@yandex.ru');
+INSERT INTO users (id, name, email, subscription_permission)
+VALUES (11, 'user1', 'user1@yandex.ru', true),
+       (12, 'user2', 'user2@yandex.ru', false),
+       (13, 'user3', 'user3@yandex.ru', false),
+       (14, 'user4', 'user4@yandex.ru', false),
+       (15, 'user5', 'user5@yandex.ru', true),
+       (16, 'user6', 'user6@yandex.ru', false),
+       (17, 'user7', 'user7@yandex.ru', true),
+       (18, 'user8', 'user8@yandex.ru', false),
+       (19, 'user9', 'user9@yandex.ru', true),
+       (20, 'user10', 'user10@yandex.ru', true);
 
 INSERT INTO categories (id, name)
        VALUES (11, 'Концерты'),
@@ -28,3 +34,7 @@ INSERT INTO compilations (id, pinned, title)
 
 INSERT INTO compilations_events (event_id, compilation_id)
        VALUES (21, 41), (22, 41);
+
+INSERT INTO subscriptions (initiator_id, user_id)
+       VALUES (11, 12), (11, 13), (15,12), (11, 14), (11, 15), (15,16),
+       (11, 16), (11, 17), (15,17), (11, 18), (11, 19), (19,13);

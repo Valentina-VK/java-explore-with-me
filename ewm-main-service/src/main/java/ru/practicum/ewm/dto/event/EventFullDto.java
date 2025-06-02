@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.ewm.dto.category.CategoryDto;
 import ru.practicum.ewm.dto.user.UserShortDto;
-import ru.practicum.ewm.model.EventState;
+import ru.practicum.ewm.enums.EventState;
 import ru.practicum.ewm.model.Location;
 
 @Builder

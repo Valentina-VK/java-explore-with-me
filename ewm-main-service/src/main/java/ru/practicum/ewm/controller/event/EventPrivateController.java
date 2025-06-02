@@ -24,7 +24,7 @@ import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.dto.request.ParticipationRequestDto;
-import ru.practicum.ewm.model.RequestStatus;
+import ru.practicum.ewm.enums.RequestStatus;
 import ru.practicum.ewm.service.event.EventService;
 import ru.practicum.ewm.service.request.RequestService;
 
@@ -90,5 +90,17 @@ public class EventPrivateController {
             throw new ValidationException("Некорректный статус для обновления");
         }
         return requestService.updateRequestsStatus(userId, eventId, statusUpdateRequest);
+    }
+
+    @GetMapping("/subscriptions")
+    public List<EventShortDto> getEventsBySubscriptions(@PathVariable @Positive Long userId,
+                                                        @RequestParam(required = false) List<Long> categories,
+                                                        @RequestParam(required = false) String rangeStart,
+                                                        @RequestParam(required = false) String rangeEnd,
+                                                        @RequestParam(defaultValue = "false") boolean onlyAvailable,
+                                                        @RequestParam(name = "from", defaultValue = DEFAULT_ZERO) @PositiveOrZero int from,
+                                                        @RequestParam(name = "size", defaultValue = DEFAULT_TEN) @Positive int size) {
+        log.info("GET получение событий по подписке пользователя id {}", userId);
+        return eventService.getEventsBySubscriptions(userId, categories, rangeStart, rangeEnd, onlyAvailable, from, size);
     }
 }

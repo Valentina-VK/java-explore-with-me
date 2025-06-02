@@ -11,9 +11,9 @@ import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.dto.event.NewEventDto;
 import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
 import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
+import ru.practicum.ewm.enums.EventState;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.util.DateTimeMapper;
 
@@ -42,7 +42,9 @@ public interface EventMapper {
     @Mapping(ignore = true, target = "id")
     Event update(UpdateEventUserRequest dto, Category cat, @MappingTarget Event oldEvent);
 
+    @Mapping(target = "initiator.countSubscribers", source = "initiator.count")
     EventFullDto toDto(Event event);
 
+    @Mapping(target = "initiator.countSubscribers", source = "initiator.count")
     EventShortDto toShortDto(Event event);
 }
