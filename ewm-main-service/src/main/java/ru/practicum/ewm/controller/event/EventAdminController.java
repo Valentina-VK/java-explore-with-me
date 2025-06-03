@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
-import ru.practicum.ewm.model.EventState;
+import ru.practicum.ewm.enums.EventState;
 import ru.practicum.ewm.service.event.EventService;
 
 import java.util.List;

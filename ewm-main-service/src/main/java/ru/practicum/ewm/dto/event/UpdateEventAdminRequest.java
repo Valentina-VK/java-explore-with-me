@@ -5,7 +5,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.ewm.model.AdminStateAction;
+import ru.practicum.ewm.enums.AdminStateAction;
 import ru.practicum.ewm.model.Location;
 
 @Builder

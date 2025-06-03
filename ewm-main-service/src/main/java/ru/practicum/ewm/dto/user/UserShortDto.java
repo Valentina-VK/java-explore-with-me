@@ -8,4 +8,6 @@ public class UserShortDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
     private String name;
+    private Integer countSubscribers;
+    private boolean subscriptionPermission;
 }

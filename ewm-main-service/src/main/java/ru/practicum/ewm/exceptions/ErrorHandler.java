@@ -44,7 +44,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleConflictException(final ConflictException exception) {
         return new ApiError(exception.getMessage(),
-                "Нарушение ограничения уникальности значения",
+                "Нарушение установленных правил обращения к ресурсу",
                 HttpStatus.CONFLICT,
                 LocalDateTime.now());
     }

@@ -12,6 +12,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.user.NewUserRequest;
 import ru.practicum.ewm.dto.user.UserDto;
+import ru.practicum.ewm.dto.user.UserShortDto;
+import ru.practicum.ewm.enums.SubscriptionAction;
+import ru.practicum.ewm.exceptions.ConflictException;
 import ru.practicum.ewm.exceptions.NotFoundException;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.service.user.UserServiceImpl;
@@ -86,7 +89,7 @@ class UserServiceImplTest {
         void save_withNotUniqueEmail_thanThrowException() {
             NewUserRequest newUser = new NewUserRequest();
             newUser.setName("Valentina");
-            newUser.setEmail("user11@yandex.ru");
+            newUser.setEmail("user1@yandex.ru");
 
             assertThrows((DataIntegrityViolationException.class), () -> userService.save(newUser));
         }
@@ -113,6 +116,79 @@ class UserServiceImplTest {
             Long notExistingId = 130L;
 
             assertThrows((NotFoundException.class), () -> userService.delete(notExistingId));
+        }
+    }
+
+    @Nested
+    @DisplayName("Tests for method - setPermission")
+    class TestSetPermission {
+        @Test
+        void setPermission_true_thanOk() {
+            Long existingId = 13L;
+
+            UserDto result = userService.setPermission(existingId, true);
+
+            assertThat(result, notNullValue());
+            assertThat(result.isSubscriptionPermission(), equalTo(true));
+        }
+    }
+
+    @Nested
+    @DisplayName("Tests for method - setSubscription")
+    class TestSetSubscription {
+        Long subscriberId = 13L;
+
+        @Test
+        void setSubscription_activateWithValidId_thanOk() {
+            Long initiatorId = 20L;
+            UserShortDto result = userService.setSubscription(subscriberId, initiatorId, SubscriptionAction.ACTIVATE);
+
+            assertThat(result, notNullValue());
+            assertThat(result.getCountSubscribers(), equalTo(1));
+        }
+
+        @Test
+        void setSubscription_cancelWithValidId_thanOk() {
+            Long initiatorId = 19L;
+            UserShortDto result = userService.setSubscription(subscriberId, initiatorId, SubscriptionAction.CANCEL);
+
+            assertThat(result, notNullValue());
+            assertThat(result.getCountSubscribers(), equalTo(0));
+        }
+
+        @Test
+        void setSubscription_activateWithNotExistingId_thanThrowException() {
+            Long notExistingId = 2000L;
+
+            assertThrows((NotFoundException.class), () -> userService.setSubscription(subscriberId, notExistingId, SubscriptionAction.ACTIVATE));
+
+        }
+
+        @Test
+        void setSubscription_activateWithSameId_thanThrowException() {
+
+            assertThrows((ConflictException.class), () -> userService.setSubscription(subscriberId, subscriberId, SubscriptionAction.ACTIVATE));
+        }
+
+        @Test
+        void setSubscription_activateWithNotPermission_thanThrowException() {
+            Long notPermissionId = 12L;
+
+            assertThrows((ConflictException.class), () -> userService.setSubscription(subscriberId, notPermissionId, SubscriptionAction.ACTIVATE));
+        }
+    }
+
+    @Nested
+    @DisplayName("Tests for method - getSubscriptions")
+    class TestGetSubscriptions {
+        @Test
+        void getSubscriptions_thanReturnResult() {
+            Long existingId = 13L;
+
+            List<UserShortDto> result = userService.getSubscriptions(existingId);
+
+            assertThat(result, notNullValue());
+            assertThat(result.size(), equalTo(2));
         }
     }
 }

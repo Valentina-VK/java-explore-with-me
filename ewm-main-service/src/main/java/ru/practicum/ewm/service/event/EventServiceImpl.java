@@ -14,17 +14,17 @@ import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.dto.event.NewEventDto;
 import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
 import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
+import ru.practicum.ewm.enums.AdminStateAction;
+import ru.practicum.ewm.enums.EventState;
+import ru.practicum.ewm.enums.StateAction;
 import ru.practicum.ewm.exceptions.ConflictException;
 import ru.practicum.ewm.exceptions.NotFoundException;
 import ru.practicum.ewm.exceptions.NotValidDateTimeException;
 import ru.practicum.ewm.mapper.EventMapper;
-import ru.practicum.ewm.model.AdminStateAction;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.model.Location;
 import ru.practicum.ewm.model.QEvent;
-import ru.practicum.ewm.model.StateAction;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.LocationRepository;
@@ -161,7 +161,7 @@ public class EventServiceImpl implements EventService {
         if (Objects.nonNull(states)) {
             byFilters = byFilters.and(event.state.in(states));
         }
-        if (Objects.nonNull(categories)) {
+        if (Objects.nonNull(users)) {
             byFilters = byFilters.and(event.initiator.id.in(users));
         }
         List<Event> events = createQuery(event, byFilters, from, size)
@@ -177,6 +177,8 @@ public class EventServiceImpl implements EventService {
                                             String rangeEnd, boolean onlyAvailable, String sort, int from, int size) {
         QEvent event = QEvent.event;
         BooleanExpression byFilters = preSetQuery(event, categories, rangeStart, rangeEnd);
+        byFilters = setAvailable(event, byFilters, onlyAvailable);
+
         if (Objects.nonNull(paid)) {
             byFilters = byFilters.and(event.paid.eq(paid));
         }
@@ -184,7 +186,6 @@ public class EventServiceImpl implements EventService {
             byFilters = byFilters.and((event.description.containsIgnoreCase(text))
                     .or(event.annotation.containsIgnoreCase(text)));
         }
-        byFilters = byFilters.and(event.confirmedRequests.lt(event.participantLimit));
 
         JPAQuery<Event> query = createQuery(event, byFilters, from, size);
 
@@ -195,7 +196,33 @@ public class EventServiceImpl implements EventService {
             if (sort.equals("EVENT_DATE")) {
                 query = query.orderBy(event.eventDate.asc());
             }
+            if (sort.equals("COUNT_SUBSCRIBERS")) {
+                query = query.orderBy(event.initiator.count.desc());
+            }
         }
+        List<Event> events = query.fetch();
+
+        return events.stream()
+                .map(mapper::toShortDto)
+                .toList();
+    }
+
+    @Override
+    public List<EventShortDto> getEventsBySubscriptions(Long userId, List<Long> categories, String rangeStart,
+                                                        String rangeEnd, boolean onlyAvailable, int from, int size) {
+        User user = validateService.checkUser(userId);
+        List<Long> subscriptionsIds = user.getSubscriptions().stream()
+                .map(User::getId)
+                .toList();
+
+        QEvent event = QEvent.event;
+        BooleanExpression byFilters = preSetQuery(event, categories, rangeStart, rangeEnd);
+        byFilters = setAvailable(event, byFilters, onlyAvailable);
+
+        byFilters = byFilters.and(event.initiator.id.in(subscriptionsIds));
+
+        JPAQuery<Event> query = createQuery(event, byFilters, from, size);
+
         List<Event> events = query.fetch();
 
         return events.stream()
@@ -226,7 +253,15 @@ public class EventServiceImpl implements EventService {
         if (Objects.nonNull(categories)) {
             byFilters = byFilters.and(event.category.id.in(categories));
         }
-        return byFilters.and(event.confirmedRequests.lt(event.participantLimit));
+        return byFilters;
+    }
+
+    private BooleanExpression setAvailable(QEvent event, BooleanExpression byFilters, boolean onlyAvailable) {
+        byFilters = byFilters.and(event.state.eq(EventState.PUBLISHED));
+        if (onlyAvailable) {
+            byFilters = byFilters.and(event.confirmedRequests.lt(event.participantLimit));
+        }
+        return byFilters;
     }
 
     private JPAQuery<Event> createQuery(QEvent event, BooleanExpression byFilters, int from, int size) {

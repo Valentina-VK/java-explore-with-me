@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.dto.request.ParticipationRequestDto;
-import ru.practicum.ewm.model.RequestStatus;
+import ru.practicum.ewm.enums.RequestStatus;
 import ru.practicum.ewm.service.request.RequestServiceImpl;
 
 import java.util.List;
